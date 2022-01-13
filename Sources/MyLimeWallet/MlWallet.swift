@@ -35,7 +35,7 @@ public class MlWallet {
             throw MlWalletException.missingMnemonics
         }
         
-        guard let keystore = try BIP32Keystore(mnemonics: mnemonic, password: password, mnemonicsPassword: password),
+        guard let keystore = try BIP32Keystore(mnemonics: mnemonic, password: password),
                 let keystoreParams = keystore.keystoreParams
         else {
             throw MlWalletException.invalidKeystore
