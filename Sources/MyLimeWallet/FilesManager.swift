@@ -11,7 +11,7 @@ class FilesManager {
     let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
     
     var url: URL {
-        URL(fileURLWithPath: path).appendingPathComponent("keystore")
+        URL(fileURLWithPath: path)
     }
     
     let fileManager = FileManager.default
