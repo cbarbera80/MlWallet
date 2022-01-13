@@ -7,17 +7,17 @@
 
 import Foundation
 
-struct MlEcSignature: CustomStringConvertible {
+public struct MlEcSignature: CustomStringConvertible {
     
-    let r: Data
-    let s: Data
-    let v: Data
+    public let r: Data
+    public let s: Data
+    public let v: Data
     
-    var flatten: Data {
+    public var flatten: Data {
         r + s + v
     }
     
-    var description: String {
+    public var description: String {
         "r: \(r.toHexString())\ns:\(s.toHexString())\nv:\(v.toHexString())"
     }
 }

@@ -133,7 +133,7 @@ public class MlWallet {
     ///   - userId: the user ID
     ///   - password: the password previously used to create the keypair
     /// - Returns: the blockchain address
-    func getBlockchainAddress(userId: String, password: String) throws -> String? {
+    public func getBlockchainAddress(userId: String, password: String) throws -> String? {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
@@ -166,7 +166,7 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
-    func sign(userId: String, password: String, data: String) throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) throws -> MlEcSignature {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
