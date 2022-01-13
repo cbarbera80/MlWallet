@@ -29,7 +29,7 @@ public class MlWallet {
     ///   - password: the password used to generate the seed
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic?) throws -> (Data, String) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (Data, String) {
         
         guard let mnemonic = mnemonic else {
             throw MlWalletException.missingMnemonics
@@ -55,8 +55,6 @@ public class MlWallet {
         guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: true) else {
             throw MlWalletException.invalidPublicKey
         }
-        
-        print("private: \(privateKey.toHexString()) - public: \(publicKey.toHexString()) - address: \(address)")
         
         return (publicKey, mnemonic)
     }
@@ -121,7 +119,7 @@ public class MlWallet {
         
         let privateKey = try credentials.manager.UNSAFE_getPrivateKeyData(password: password, account: address)
         
-        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false) else {
+        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: true) else {
             throw MlWalletException.invalidPublicKey
         }
         
@@ -141,25 +139,7 @@ public class MlWallet {
         let credentials = try getCredentials(userId: userId, password: password)
         return credentials.address?.address
     }
-    
-    /// Get the user keystore
-    /// - Parameters:
-    ///   - userId: the user ID
-    ///   - password: the password previously used to create the keypair
-    /// - Returns: a optional keystore
-    func getCredentials(userId: String, password: String) throws -> Credential {
-        guard let filename = userDefaults.string(forKey: userId),
-              let data = walletUtils.loadData(from: filename),
-              let keystore = BIP32Keystore(data),
-              let address = keystore.addresses?.first
-        else { throw MlWalletException.invalidStore }
-        
-        let keystoreManager =  KeystoreManager([keystore])
-        
-        _ = try keystoreManager.UNSAFE_getPrivateKeyData(password: password, account: address)
-        return Credential(keystore: keystore, manager: keystoreManager)
-    }
-    
+
     /// Signs data.
     /// - Parameters:
     ///   - userId: the user ID
@@ -192,4 +172,25 @@ public class MlWallet {
     static public func generateMnemonic() -> Mnemonic? {
         return try? BIP39.generateMnemonics(bitsOfEntropy: 128)
     }
+}
+
+extension MlWallet {
+    /// Get the user keystore
+    /// - Parameters:
+    ///   - userId: the user ID
+    ///   - password: the password previously used to create the keypair
+    /// - Returns: a optional keystore
+    func getCredentials(userId: String, password: String) throws -> Credential {
+        guard let filename = userDefaults.string(forKey: userId),
+              let data = walletUtils.loadData(from: filename),
+              let keystore = BIP32Keystore(data),
+              let address = keystore.addresses?.first
+        else { throw MlWalletException.invalidStore }
+        
+        let keystoreManager =  KeystoreManager([keystore])
+        
+        _ = try keystoreManager.UNSAFE_getPrivateKeyData(password: password, account: address)
+        return Credential(keystore: keystore, manager: keystoreManager)
+    }
+    
 }
