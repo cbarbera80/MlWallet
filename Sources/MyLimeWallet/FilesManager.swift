@@ -17,19 +17,19 @@ class FilesManager {
     let fileManager = FileManager.default
     
     func createFile(withContents contents: Data, fileName: String = String.randomString(ofLength: 8)) -> String {
-        let filePath = url.appendingPathComponent(fileName)
-        FileManager.default.createFile(atPath: filePath.absoluteString, contents: contents, attributes: nil)
+        let filePath = url.appendingPathComponent(fileName, isDirectory: false)
+        FileManager.default.createFile(atPath: filePath.path, contents: contents, attributes: nil)
         return fileName
     }
     
     func isFileExists(_ fileName: String) -> Bool {
         let filePath = url.appendingPathComponent(fileName)
-        return fileManager.fileExists(atPath: filePath.absoluteString)
+        return fileManager.fileExists(atPath: filePath.path)
     }
     
     func removeFile(_ fileName: String) {
         let filePath = url.appendingPathComponent(fileName)
-        try? fileManager.removeItem(atPath: filePath.absoluteString)
+        try? fileManager.removeItem(atPath: filePath.path)
     }
     
     func getFile(withName fileName: String) -> Data? {
@@ -44,7 +44,7 @@ class FilesManager {
     }
     
     func getAllFiles() -> [String] {
-        return (try? fileManager.contentsOfDirectory(atPath: url.absoluteString)) ?? []
+        return (try? fileManager.contentsOfDirectory(atPath: url.path)) ?? []
     }
     
 }
