@@ -14,7 +14,7 @@ public class MlWallet {
     
     let fileManager: FilesManager
     let walletUtils: WalletUtility
-    let userDefaults = UserDefaults.standard
+    let userDefaults = UserDefaults.init(suiteName: "mlwallet")!
     
     public init() {
         fileManager = FilesManager()
