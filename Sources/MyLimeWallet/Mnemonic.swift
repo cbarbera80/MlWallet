@@ -7,4 +7,20 @@
 
 import Foundation
 
-public typealias Mnemonic = String
+
+public class Mnemonic {
+
+    public let phrase: String
+    
+    public var words: [String] {
+        return phrase
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(separator: " ")
+            .map { String($0) }
+    }
+    
+    init(phrase: String) {
+        self.phrase = phrase
+    }
+}
