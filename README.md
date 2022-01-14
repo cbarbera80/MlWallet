@@ -20,7 +20,7 @@ Once you have your Swift package set up, adding MyLimeWallet as a dependency is 
 
 ```swift
 dependencies: [
-    .package(url: "https://s4win@dev.azure.com/s4win/MyLime/_git/mylime-wallet-ios", from: "1.0.1")
+    .package(url: "https://s4win@dev.azure.com/s4win/MyLime/_git/mylime-wallet-ios", from: "1.0.2")
 ]
 ```
 
