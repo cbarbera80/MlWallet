@@ -31,8 +31,12 @@ public class MlWallet {
     /// - Returns: the generated public key and the mnemonic phrase
     public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (Data, Mnemonic) {
         
-        guard let mnemonic = mnemonic else {
+        guard let mnemonic = mnemonic  else {
             throw MlWalletException.missingMnemonics
+        }
+        
+        guard mnemonic.isValid else {
+            throw MlWalletException.wrongMnemonics
         }
         
         guard let keystore = try BIP32Keystore(mnemonics: mnemonic.phrase, password: password),

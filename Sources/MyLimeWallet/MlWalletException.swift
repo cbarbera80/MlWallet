@@ -8,6 +8,7 @@
 import Foundation
 
 public enum MlWalletException: Error {
+    case wrongMnemonics
     case missingMnemonics
     case invalidKeystore
     case invalidAddress

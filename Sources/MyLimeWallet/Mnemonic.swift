@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import web3swift
 
 public class Mnemonic {
 
@@ -20,7 +20,12 @@ public class Mnemonic {
             .map { String($0) }
     }
     
-    init(phrase: String) {
+    init?(phrase: String) {
         self.phrase = phrase
+    }
+    
+    var isValid: Bool {
+        let data = BIP39.mnemonicsToEntropy(phrase)
+        return data != nil
     }
 }
