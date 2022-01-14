@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "13.0"
   s.source       = { :git => "https://github.com/cbarbera80/MlWallet", :tag => s.version.to_s }
   s.source_files  = "Sources/**/*"
-  s.dependency = "web3swift"
+  s.dependency 'web3swift'
   s.frameworks  = "Foundation"
   s.swift_versions = ['5.1']
 end
