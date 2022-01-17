@@ -20,7 +20,7 @@ public class Mnemonic {
             .map { String($0) }
     }
     
-    init?(phrase: String) {
+    public init?(phrase: String) {
         self.phrase = phrase
     }
     
