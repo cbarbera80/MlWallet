@@ -21,6 +21,7 @@ public class Mnemonic {
     }
     
     public init?(phrase: String) {
+        guard BIP39.mnemonicsToEntropy(phrase) != nil else { return nil }
         self.phrase = phrase
     }
     

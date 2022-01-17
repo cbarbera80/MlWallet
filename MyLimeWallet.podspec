@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "MyLimeWallet"
-  s.version      = "1.0.6"
+  s.version      = "1.1.0"
   s.summary      = "Wallet for MyLime"
   s.description  = <<-DESC
     Demo
