@@ -56,7 +56,7 @@ public class MlWallet {
         
         let privateKey = try manager.UNSAFE_getPrivateKeyData(password: password, account: address)
         
-        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: true) else {
+        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false) else {
             throw MlWalletException.invalidPublicKey
         }
         
@@ -123,7 +123,7 @@ public class MlWallet {
         
         let privateKey = try credentials.manager.UNSAFE_getPrivateKeyData(password: password, account: address)
         
-        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: true) else {
+        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false) else {
             throw MlWalletException.invalidPublicKey
         }
         
@@ -160,7 +160,6 @@ public class MlWallet {
         
         let optionalSignature =  data
             .data(using: .utf8)
-            .flatMap(Web3.Utils.sha3)
             .flatMap { try? Web3Signer.signPersonalMessage($0, keystore: credentials.keystore, account: address, password: password)}
             .flatMap(SECP256K1.unmarshalSignature)
         
