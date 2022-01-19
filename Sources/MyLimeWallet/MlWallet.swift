@@ -63,6 +63,24 @@ public class MlWallet {
         return (publicKey, mnemonic)
     }
     
+    @available(iOS 13.0.0, *)
+    public func asyncGenerateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (Data, Mnemonic) {
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                
+                do {
+                    let pair = try self.generateKeyPair(userId: userId, password: password, mnemonic: mnemonic)
+                    continuation.resume(returning: pair)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     /// Checks if the given user has a stored keypair.
     /// - Parameter userId: the user ID
     /// - Returns: true if there is a keypair associated to the user ID, false otherwise
@@ -107,6 +125,29 @@ public class MlWallet {
         }
     }
     
+    /// Checks if the password is correct to use the given user keypair.
+    /// - Parameters:
+    ///   - userId:  the user ID
+    ///   - password: the password previously used to create the keypair
+    /// - Returns: true if the password is correct, false otherwise
+    @available(iOS 13.0.0, *)
+    public func asyncIsValidKeyPassword(userId: String, password: String) async throws -> Bool {
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                
+                do {
+                    let res = try self.isValidKeyPassword(userId: userId, password: password)
+                    continuation.resume(returning: res)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     /// Returns the user's public key.
     /// - Parameters:
     ///   - userId: the user ID
@@ -130,6 +171,28 @@ public class MlWallet {
         return publicKey
     }
     
+    /// Returns the user's public key.
+    /// - Parameters:
+    ///   - userId: the user ID
+    ///   - password: the password previously used to create the keypair
+    /// - Returns: the user's public key
+    @available(iOS 13.0, *)
+    public func asyncGetPublicKey(userId: String, password: String) async throws -> Data {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                
+                do {
+                    let res = try self.getPublicKey(userId: userId, password: password)
+                    continuation.resume(returning: res)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     /// Returns the user's blockchain address.
     /// - Parameters:
     ///   - userId: the user ID
@@ -142,6 +205,28 @@ public class MlWallet {
     
         let credentials = try getCredentials(userId: userId, password: password)
         return credentials.address?.address
+    }
+    
+    /// Returns the user's blockchain address.
+    /// - Parameters:
+    ///   - userId: the user ID
+    ///   - password: the password previously used to create the keypair
+    /// - Returns: the blockchain address
+    @available(iOS 13.0.0, *)
+    public func asyncGetBlockchainAddress(userId: String, password: String) async throws -> String? {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                
+                do {
+                    let res = try self.getBlockchainAddress(userId: userId, password: password)
+                    continuation.resume(returning: res)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 
     /// Signs data.
@@ -170,6 +255,29 @@ public class MlWallet {
         let s = MlEcSignature(r: signature.r, s: signature.s, v: Data([signature.v]))
         
         return s
+    }
+    
+    /// Signs data.
+    /// - Parameters:
+    ///   - userId: the user ID
+    ///   - password: the password previously used to create the keypair
+    ///   - data: the data to sign
+    /// - Returns: an elliptic curve signature
+    @available(iOS 13.0.0, *)
+    public func asyncSign(userId: String, password: String, data: String) async throws -> MlEcSignature {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                
+                do {
+                    let res = try self.sign(userId: userId, password: password, data: data)
+                    continuation.resume(returning: res)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
     
     static public func generateMnemonic() -> Mnemonic? {
