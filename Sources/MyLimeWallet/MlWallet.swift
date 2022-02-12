@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MlWallet.swift
 //  
 //
 //  Created by Claudio Barbera on 11/01/22.
@@ -63,12 +63,20 @@ public class MlWallet {
         return (publicKey, mnemonic)
     }
     
+    /// Generate a key pair for the given user
+    ///  If a mnemonic is provided to this method, then the seed will be generated using it.
+    ///  If the mnemonic is not provided, then a new random mnemonic will be used.
+    /// - Parameters:
+    ///   - userId: the user ID
+    ///   - password: the password used to generate the seed
+    ///   - mnemonic: a mnemonic phrase to recover the keypair
+    /// - Returns: the generated public key and the mnemonic phrase
     @available(iOS 13.0.0, *)
-    public func asyncGenerateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (Data, Mnemonic) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (Data, Mnemonic) {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 guard let self = self else { return }
                 
                 do {
@@ -131,11 +139,11 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     /// - Returns: true if the password is correct, false otherwise
     @available(iOS 13.0.0, *)
-    public func asyncIsValidKeyPassword(userId: String, password: String) async throws -> Bool {
+    public func isValidKeyPassword(userId: String, password: String) async throws -> Bool {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 guard let self = self else { return }
                 
                 do {
@@ -177,10 +185,10 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     /// - Returns: the user's public key
     @available(iOS 13.0, *)
-    public func asyncGetPublicKey(userId: String, password: String) async throws -> Data {
+    public func getPublicKey(userId: String, password: String) async throws -> Data {
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 guard let self = self else { return }
                 
                 do {
@@ -213,10 +221,10 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     /// - Returns: the blockchain address
     @available(iOS 13.0.0, *)
-    public func asyncGetBlockchainAddress(userId: String, password: String) async throws -> String? {
+    public func getBlockchainAddress(userId: String, password: String) async throws -> String? {
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 guard let self = self else { return }
                 
                 do {
@@ -264,10 +272,10 @@ public class MlWallet {
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
     @available(iOS 13.0.0, *)
-    public func asyncSign(userId: String, password: String, data: String) async throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) async throws -> MlEcSignature {
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 guard let self = self else { return }
                 
                 do {
