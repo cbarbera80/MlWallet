@@ -9,7 +9,7 @@
 [CocoaPods](https://cocoapods.org/) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate MyLimeSignManager into your Xcode project using CocoaPods, specify it in your Podfile:
 
 ```ruby
-pod 'MyLimeWallet', :git => "https://s4win@dev.azure.com/s4win/MyLime/_git/mylime-wallet-ios"
+pod 'MyLimeWallet', :git => "https://gitlab.com/mylime/mylime-wallet.git"
 ```
 
 ### Swift Package Manager
@@ -20,7 +20,7 @@ Once you have your Swift package set up, adding MyLimeWallet as a dependency is 
 
 ```swift
 dependencies: [
-    .package(url: "https://s4win@dev.azure.com/s4win/MyLime/_git/mylime-wallet-ios", from: "2.0.0")
+    .package(url: "https://gitlab.com/mylime/mylime-wallet.git", from: "2.0.0")
 ]
 ```
 

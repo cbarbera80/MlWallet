@@ -15,6 +15,7 @@ public class MlWallet {
     let fileManager: FilesManager
     let walletUtils: WalletUtility
     let userDefaults = UserDefaults.init(suiteName: "mlwallet")!
+    public var publicKey: Data?
     
     public init() {
         fileManager = FilesManager()
@@ -60,6 +61,7 @@ public class MlWallet {
             throw MlWalletException.invalidPublicKey
         }
         
+        self.publicKey = publicKey
         return (publicKey, mnemonic)
     }
     
