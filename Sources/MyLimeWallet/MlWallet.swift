@@ -15,11 +15,18 @@ public class MlWallet {
     let fileManager: FilesManager
     let walletUtils: WalletUtility
     let userDefaults = UserDefaults.init(suiteName: "mlwallet")!
-    public var publicKey: Data?
+    
+    public var publicKey: Data? {
+        didSet {
+            userDefaults.set(publicKey, forKey: "publicKey")
+        }
+    }
     
     public init() {
         fileManager = FilesManager()
         walletUtils = WalletUtility(fileManager: fileManager)
+        publicKey = userDefaults.object(forKey: "publicKey") as? Data
+        
     }
     
     /// Generate a key pair for the given user
