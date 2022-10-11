@@ -16,16 +16,16 @@ public class MlWallet {
     let walletUtils: WalletUtility
     let userDefaults = UserDefaults.init(suiteName: "mlwallet")!
     
-    public var publicKey: Data? {
+    public var publicKey: String? {
         didSet {
-            userDefaults.set(publicKey, forKey: "publicKey")
+            userDefaults.set(publicKey, forKey: "publicKey_")
         }
     }
     
     public init() {
         fileManager = FilesManager()
         walletUtils = WalletUtility(fileManager: fileManager)
-        publicKey = userDefaults.object(forKey: "publicKey") as? Data
+        publicKey = userDefaults.object(forKey: "publicKey_") as? String
         
     }
     
@@ -85,8 +85,9 @@ public class MlWallet {
                 return
             }
             
-            self?.publicKey = publicKey
-            completion(.success((publicKey.toHexString(), mnemonic)))
+            let final = "0x" + publicKey.toHexString()
+            self?.publicKey = final
+            completion(.success((final, mnemonic)))
         }
     }
     
@@ -201,7 +202,7 @@ public class MlWallet {
             throw MlWalletException.invalidPublicKey
         }
         
-        return publicKey.toHexString()
+        return "0x" + publicKey.toHexString()
     }
     
     /// Returns the user's public key.
