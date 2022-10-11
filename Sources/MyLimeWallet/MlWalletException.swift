@@ -17,4 +17,5 @@ public enum MlWalletException: Error {
     case invalidStore
     case invalidEthereumAddress
     case signError
+    case missingPrivateKey
 }

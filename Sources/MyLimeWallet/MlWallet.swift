@@ -37,39 +37,57 @@ public class MlWallet {
     ///   - password: the password used to generate the seed
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (Data, Mnemonic) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic(), completion: @escaping (Result<(Data, Mnemonic), Error>) -> Void) {
         
-        guard let mnemonic = mnemonic  else {
-            throw MlWalletException.missingMnemonics
-        }
-        
-        guard mnemonic.isValid else {
-            throw MlWalletException.wrongMnemonics
-        }
-        
-        guard let keystore = try BIP32Keystore(mnemonics: mnemonic.phrase, password: password),
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            
+            guard let mnemonic = mnemonic  else {
+                completion(.failure(MlWalletException.missingMnemonics))
+                return
+            }
+            
+            guard mnemonic.isValid else {
+                completion(.failure(MlWalletException.wrongMnemonics))
+                return
+            }
+            
+            guard
+                let keystore = try? BIP32Keystore(mnemonics: mnemonic.phrase, password: password),
                 let keystoreParams = keystore.keystoreParams
-        else {
-            throw MlWalletException.invalidKeystore
+            else {
+                completion(.failure(MlWalletException.invalidKeystore))
+                return
+            }
+            
+            let manager = KeystoreManager(([keystore]))
+            
+            guard
+                let address = keystore.addresses?.first,
+                let walletFileName = try? self?.walletUtils.save(params: keystoreParams)
+            else {
+                completion(.failure(MlWalletException.invalidAddress))
+                return
+            }
+           
+            self?.userDefaults.setValue(walletFileName, forKey: userId)
+            
+            guard
+                let privateKey = try? manager.UNSAFE_getPrivateKeyData(password: password, account: address)
+            else {
+                completion(.failure(MlWalletException.missingPrivateKey))
+                return
+            }
+            
+            guard
+                let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false)
+            else {
+                completion(.failure(MlWalletException.invalidPublicKey))
+                return
+            }
+            
+            self?.publicKey = publicKey
+            completion(.success((publicKey, mnemonic)))
         }
-        
-        let manager = KeystoreManager(([keystore]))
-        
-        guard let address = keystore.addresses?.first else {
-            throw MlWalletException.invalidAddress
-        }
-        
-        let walletFileName = try walletUtils.save(params: keystoreParams)
-        userDefaults.setValue(walletFileName, forKey: userId)
-        
-        let privateKey = try manager.UNSAFE_getPrivateKeyData(password: password, account: address)
-        
-        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false) else {
-            throw MlWalletException.invalidPublicKey
-        }
-        
-        self.publicKey = publicKey
-        return (publicKey, mnemonic)
     }
     
     /// Generate a key pair for the given user
@@ -85,13 +103,11 @@ public class MlWallet {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-                guard let self = self else { return }
-                
-                do {
-                    let pair = try self.generateKeyPair(userId: userId, password: password, mnemonic: mnemonic)
+            generateKeyPair(userId: userId, password: password) { result in
+                switch result {
+                case .success(let pair):
                     continuation.resume(returning: pair)
-                } catch {
+                case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
