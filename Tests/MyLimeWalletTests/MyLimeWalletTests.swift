@@ -23,10 +23,10 @@ final class MyLimeWalletTests: XCTestCase {
                                            password: "password",
                                            mnemonic: mnemonic)
         
-        let string = "{\"id\":\"tag_07-10-2022-093819_0\",\"name\":\"tag_11-10-2022-080856_3\",\"user_id\":null,\"method\":\"update\",\"updateId\":1,\"Asset, Claim\":{\"Attribute Code\":\"Asset, Claim\",\"Attribute Label\":\"transfer of ownership of the asset to the consumer\"}}"
+        let string = "Hello, World!"
         let signature = try! await sut.sign(userId: "cb2", password: "password", data: string)
         print(signature)
-        XCTAssertEqual(signature, "e29399b5485942731ca7dc3d8ca5aa2c3405bd4332c35e896e2b6f22102967e32f68f0f6e34b99676ee2e06c7c46148aaa07a0f161f943e9360684e48f4836901b")
+        XCTAssertEqual(signature, "0x306c777e9f5b3bb96422260355f38838fd8e37b9444e289070bf58aeb9d665bc0de0516cd82b9a3b3151e9508abebf817ab894ae2c866cbbe9281abe1c3ef4161b")
         
     }
 }

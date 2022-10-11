@@ -19,7 +19,6 @@ public class MlWallet {
     public init() {
         fileManager = FilesManager()
         walletUtils = WalletUtility(fileManager: fileManager)
-        publicKey = userDefaults.object(forKey: "publicKey_") as? String
         
     }
     
