@@ -103,7 +103,7 @@ public class MlWallet {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            generateKeyPair(userId: userId, password: password) { result in
+            generateKeyPair(userId: userId, password: password, mnemonic: mnemonic) { result in
                 switch result {
                 case .success(let pair):
                     continuation.resume(returning: pair)
