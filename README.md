@@ -49,7 +49,7 @@ If a mnemonic is provided to this method, then the seed will be generated using 
 If the mnemonic is not provided, then a new random mnemonic will be used.
 
 ``` swift
-public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (Data, Mnemonic) 
+public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (String, Mnemonic) 
 ```
 
 #### Parameters
@@ -120,7 +120,7 @@ true if the password is correct, false otherwise
 Returns the user's public key.
 
 ``` swift
-public func getPublicKey(userId: String, password: String) throws -> Data 
+public func getPublicKey(userId: String, password: String) throws -> String 
 ```
 
 #### Parameters
@@ -154,7 +154,7 @@ the blockchain address
 Signs data.
 
 ``` swift
-public func sign(userId: String, password: String, data: String) throws -> MlEcSignature 
+public func sign(userId: String, password: String, data: String) throws -> String 
 ```
 
 #### Parameters

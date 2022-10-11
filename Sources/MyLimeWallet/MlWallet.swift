@@ -37,39 +37,57 @@ public class MlWallet {
     ///   - password: the password used to generate the seed
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) throws -> (Data, Mnemonic) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic(), completion: @escaping (Result<(String, Mnemonic), Error>) -> Void) {
         
-        guard let mnemonic = mnemonic  else {
-            throw MlWalletException.missingMnemonics
-        }
-        
-        guard mnemonic.isValid else {
-            throw MlWalletException.wrongMnemonics
-        }
-        
-        guard let keystore = try BIP32Keystore(mnemonics: mnemonic.phrase, password: password),
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            
+            guard let mnemonic = mnemonic  else {
+                completion(.failure(MlWalletException.missingMnemonics))
+                return
+            }
+            
+            guard mnemonic.isValid else {
+                completion(.failure(MlWalletException.wrongMnemonics))
+                return
+            }
+            
+            guard
+                let keystore = try? BIP32Keystore(mnemonics: mnemonic.phrase, password: password),
                 let keystoreParams = keystore.keystoreParams
-        else {
-            throw MlWalletException.invalidKeystore
+            else {
+                completion(.failure(MlWalletException.invalidKeystore))
+                return
+            }
+            
+            let manager = KeystoreManager(([keystore]))
+            
+            guard
+                let address = keystore.addresses?.first,
+                let walletFileName = try? self?.walletUtils.save(params: keystoreParams)
+            else {
+                completion(.failure(MlWalletException.invalidAddress))
+                return
+            }
+           
+            self?.userDefaults.setValue(walletFileName, forKey: userId)
+            
+            guard
+                let privateKey = try? manager.UNSAFE_getPrivateKeyData(password: password, account: address)
+            else {
+                completion(.failure(MlWalletException.missingPrivateKey))
+                return
+            }
+            
+            guard
+                let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false)
+            else {
+                completion(.failure(MlWalletException.invalidPublicKey))
+                return
+            }
+            
+            self?.publicKey = publicKey
+            completion(.success((publicKey.toHexString(), mnemonic)))
         }
-        
-        let manager = KeystoreManager(([keystore]))
-        
-        guard let address = keystore.addresses?.first else {
-            throw MlWalletException.invalidAddress
-        }
-        
-        let walletFileName = try walletUtils.save(params: keystoreParams)
-        userDefaults.setValue(walletFileName, forKey: userId)
-        
-        let privateKey = try manager.UNSAFE_getPrivateKeyData(password: password, account: address)
-        
-        guard let publicKey = Web3.Utils.privateToPublic(privateKey, compressed: false) else {
-            throw MlWalletException.invalidPublicKey
-        }
-        
-        self.publicKey = publicKey
-        return (publicKey, mnemonic)
     }
     
     /// Generate a key pair for the given user
@@ -81,17 +99,15 @@ public class MlWallet {
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
     @available(iOS 13.0.0, *)
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (Data, Mnemonic) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (String, Mnemonic) {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-                guard let self = self else { return }
-                
-                do {
-                    let pair = try self.generateKeyPair(userId: userId, password: password, mnemonic: mnemonic)
+            generateKeyPair(userId: userId, password: password) { result in
+                switch result {
+                case .success(let pair):
                     continuation.resume(returning: pair)
-                } catch {
+                case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -170,7 +186,7 @@ public class MlWallet {
     ///   - userId: the user ID
     ///   - password: the password previously used to create the keypair
     /// - Returns: the user's public key
-    public func getPublicKey(userId: String, password: String) throws -> Data {
+    public func getPublicKey(userId: String, password: String) throws -> String {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
@@ -185,7 +201,7 @@ public class MlWallet {
             throw MlWalletException.invalidPublicKey
         }
         
-        return publicKey
+        return publicKey.toHexString()
     }
     
     /// Returns the user's public key.
@@ -194,7 +210,7 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     /// - Returns: the user's public key
     @available(iOS 13.0, *)
-    public func getPublicKey(userId: String, password: String) async throws -> Data {
+    public func getPublicKey(userId: String, password: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
@@ -252,7 +268,7 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
-    public func sign(userId: String, password: String, data: String) throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) throws -> String {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
@@ -271,7 +287,7 @@ public class MlWallet {
         
         let s = MlEcSignature(r: signature.r, s: signature.s, v: Data([signature.v]))
         
-        return s
+        return s.flatten.toHexString()
     }
     
     /// Signs data.
@@ -281,7 +297,7 @@ public class MlWallet {
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
     @available(iOS 13.0.0, *)
-    public func sign(userId: String, password: String, data: String) async throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
