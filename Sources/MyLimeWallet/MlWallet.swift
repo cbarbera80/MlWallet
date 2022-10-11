@@ -37,7 +37,7 @@ public class MlWallet {
     ///   - password: the password used to generate the seed
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic(), completion: @escaping (Result<(Data, Mnemonic), Error>) -> Void) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic(), completion: @escaping (Result<(String, Mnemonic), Error>) -> Void) {
         
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             
@@ -86,7 +86,7 @@ public class MlWallet {
             }
             
             self?.publicKey = publicKey
-            completion(.success((publicKey, mnemonic)))
+            completion(.success((publicKey.toHexString(), mnemonic)))
         }
     }
     
@@ -99,7 +99,7 @@ public class MlWallet {
     ///   - mnemonic: a mnemonic phrase to recover the keypair
     /// - Returns: the generated public key and the mnemonic phrase
     @available(iOS 13.0.0, *)
-    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (Data, Mnemonic) {
+    public func generateKeyPair(userId: String, password: String, mnemonic: Mnemonic? = generateMnemonic()) async throws -> (String, Mnemonic) {
         
         return try await withCheckedThrowingContinuation { continuation in
             
@@ -186,7 +186,7 @@ public class MlWallet {
     ///   - userId: the user ID
     ///   - password: the password previously used to create the keypair
     /// - Returns: the user's public key
-    public func getPublicKey(userId: String, password: String) throws -> Data {
+    public func getPublicKey(userId: String, password: String) throws -> String {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
@@ -201,7 +201,7 @@ public class MlWallet {
             throw MlWalletException.invalidPublicKey
         }
         
-        return publicKey
+        return publicKey.toHexString()
     }
     
     /// Returns the user's public key.
@@ -210,7 +210,7 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     /// - Returns: the user's public key
     @available(iOS 13.0, *)
-    public func getPublicKey(userId: String, password: String) async throws -> Data {
+    public func getPublicKey(userId: String, password: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
@@ -268,7 +268,7 @@ public class MlWallet {
     ///   - password: the password previously used to create the keypair
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
-    public func sign(userId: String, password: String, data: String) throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) throws -> String {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
@@ -287,7 +287,7 @@ public class MlWallet {
         
         let s = MlEcSignature(r: signature.r, s: signature.s, v: Data([signature.v]))
         
-        return s
+        return s.flatten.toHexString()
     }
     
     /// Signs data.
@@ -297,7 +297,7 @@ public class MlWallet {
     ///   - data: the data to sign
     /// - Returns: an elliptic curve signature
     @available(iOS 13.0.0, *)
-    public func sign(userId: String, password: String, data: String) async throws -> MlEcSignature {
+    public func sign(userId: String, password: String, data: String) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in

@@ -27,7 +27,7 @@ final class MyLimeWalletTests: XCTestCase {
             let string = "Hello, World!"
             let signature = try! await sut.sign(userId: "cb2", password: "password", data: string)
             
-            XCTAssertEqual(signature.flatten.toHexString(), "e29399b5485942731ca7dc3d8ca5aa2c3405bd4332c35e896e2b6f22102967e32f68f0f6e34b99676ee2e06c7c46148aaa07a0f161f943e9360684e48f4836901b")
+            XCTAssertEqual(signature, "e29399b5485942731ca7dc3d8ca5aa2c3405bd4332c35e896e2b6f22102967e32f68f0f6e34b99676ee2e06c7c46148aaa07a0f161f943e9360684e48f4836901b")
         }
     }
 }
