@@ -16,12 +16,6 @@ public class MlWallet {
     let walletUtils: WalletUtility
     let userDefaults = UserDefaults.init(suiteName: "mlwallet")!
     
-    public var publicKey: String? {
-        didSet {
-            userDefaults.set(publicKey, forKey: "publicKey_")
-        }
-    }
-    
     public init() {
         fileManager = FilesManager()
         walletUtils = WalletUtility(fileManager: fileManager)
@@ -86,7 +80,6 @@ public class MlWallet {
             }
             
             let final = "0x" + publicKey.toHexString()
-            self?.publicKey = final
             completion(.success((final, mnemonic)))
         }
     }
@@ -288,7 +281,7 @@ public class MlWallet {
         
         let s = MlEcSignature(r: signature.r, s: signature.s, v: Data([signature.v]))
         
-        return s.flatten.toHexString()
+        return "0x" + s.flatten.toHexString()
     }
     
     /// Signs data.

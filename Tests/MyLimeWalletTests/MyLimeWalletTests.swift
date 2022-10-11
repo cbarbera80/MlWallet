@@ -17,20 +17,16 @@ final class MyLimeWalletTests: XCTestCase {
     }
     
     @available(iOS 13.0.0, *)
-    func test_signHelloWorld_withPassword() throws {
+    func test_signHelloWorld_withPassword() async {
+    
+        _ = try! await sut.generateKeyPair(userId: "cb2",
+                                           password: "password",
+                                           mnemonic: mnemonic)
         
-        Task {
-            _ = try! await sut.generateKeyPair(userId: "cb2",
-                                         password: "password",
-                                         mnemonic: mnemonic)
-            
-            let string = "Hello, World!"
-            let signature = try! await sut.sign(userId: "cb2", password: "password", data: string)
-            
-            let publicKey = sut.publicKey!.toHexString()
-            
-            XCTAssertEqual(publicKey, "044aeccd43d45b63b6f2921914fcc6661aa92738fadae59242a38dce733024310c8cc6db26ab037172fc41adfd7ef1ee95291b77c6e7e8e038a175a4723ee374d2")
-            XCTAssertEqual(signature, "e29399b5485942731ca7dc3d8ca5aa2c3405bd4332c35e896e2b6f22102967e32f68f0f6e34b99676ee2e06c7c46148aaa07a0f161f943e9360684e48f4836901b")
-        }
+        let string = "{\"id\":\"tag_07-10-2022-093819_0\",\"name\":\"tag_11-10-2022-080856_3\",\"user_id\":null,\"method\":\"update\",\"updateId\":1,\"Asset, Claim\":{\"Attribute Code\":\"Asset, Claim\",\"Attribute Label\":\"transfer of ownership of the asset to the consumer\"}}"
+        let signature = try! await sut.sign(userId: "cb2", password: "password", data: string)
+        print(signature)
+        XCTAssertEqual(signature, "e29399b5485942731ca7dc3d8ca5aa2c3405bd4332c35e896e2b6f22102967e32f68f0f6e34b99676ee2e06c7c46148aaa07a0f161f943e9360684e48f4836901b")
+        
     }
 }
