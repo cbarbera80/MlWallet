@@ -224,13 +224,20 @@ public class MlWallet {
     ///   - userId: the user ID
     ///   - password: the password previously used to create the keypair
     /// - Returns: the blockchain address
-    public func getBlockchainAddress(userId: String, password: String) throws -> String? {
+    public func getBlockchainAddress(userId: String, password: String) throws -> String {
         if !hasKeys(for: userId) {
             throw MlWalletException.missingKeys
         }
     
         let credentials = try getCredentials(userId: userId, password: password)
-        return credentials.address?.address
+        
+        guard
+            let address = credentials.address?.address
+        else {
+            throw MlWalletException.missingBlockchainAddress
+        }
+        
+        return address
     }
     
     /// Returns the user's blockchain address.
