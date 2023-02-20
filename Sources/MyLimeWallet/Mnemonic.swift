@@ -8,7 +8,7 @@
 import Foundation
 import web3swift
 
-public class Mnemonic {
+public class Mnemonic: Codable {
 
     public let phrase: String
     
