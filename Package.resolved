@@ -15,26 +15,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "19b3c3ceed117c5cc883517c4e658548315ba70b",
-          "version": "1.6.0"
-        }
-      },
-      {
-        "package": "PromiseKit",
-        "repositoryURL": "https://github.com/mxcl/PromiseKit.git",
-        "state": {
-          "branch": null,
-          "revision": "5b90042bb419e6f3b1719c973f37e1eab46ce991",
-          "version": "6.21.0"
-        }
-      },
-      {
-        "package": "Starscream",
-        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
-        "state": {
-          "branch": null,
-          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
-          "version": "4.0.4"
+          "revision": "039f56c5d7960f277087a0be51f5eb04ed0ec073",
+          "version": "1.5.1"
         }
       },
       {
@@ -42,8 +24,8 @@
         "repositoryURL": "https://github.com/skywinder/web3swift",
         "state": {
           "branch": null,
-          "revision": "ff538e874cf2f6ca0f5736bfd7deb89f4a0bd624",
-          "version": "2.5.0"
+          "revision": "74c24f4d3d5f1816616e9ebd16741ca5f7a57eb0",
+          "version": "3.2.0"
         }
       }
     ]

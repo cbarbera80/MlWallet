@@ -8,6 +8,7 @@
 import Foundation
 import web3swift
 import CryptoSwift
+import Web3Core
 
 /// MyLime Wallet main class. It manages user keys and allows signing.
 public class MlWallet {
@@ -338,4 +339,11 @@ extension MlWallet {
         return Credential(keystore: keystore, manager: keystoreManager)
     }
     
+}
+
+extension Web3.Utils {
+    static func privateToPublic(_ privateKey: Data, compressed: Bool = false) -> Data? {
+        guard let publicKey = SECP256K1.privateToPublic(privateKey:  privateKey, compressed: compressed) else {return nil}
+        return publicKey
+    }
 }
