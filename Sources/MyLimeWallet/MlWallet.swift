@@ -108,6 +108,10 @@ public class MlWallet {
         }
     }
     
+    public func keys(for userId: String) -> [String] {
+        Array(userDefaults.dictionaryRepresentation().keys)
+    }
+    
     /// Checks if the given user has a stored keypair.
     /// - Parameter userId: the user ID
     /// - Returns: true if there is a keypair associated to the user ID, false otherwise
